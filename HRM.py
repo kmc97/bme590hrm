@@ -3,25 +3,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#data = pd.read_csv("test_data1.csv", names= ["time", "voltage"])
-#time = data["time"]
-#voltage = data["voltage"]
-
-#plt.plot(time,voltage, "o")
-
-class HeartRate:
+class readInData:
 
     def __init__ (self, filename = None):
         self.filename = filename
 
 
     def parseData(self):
-        data = pd.read_csv(self.filename, names = ["Time", "Voltage"])
-        time = data["Time"]
-        voltage = data["Voltage"]
-        return time, voltage
+        data = pd.read_csv(self.filename, names = ["Time", "Voltage"]) 
+        return data
 
-x = HeartRate("test_data1.csv")
-print (x.parseData())
+    def plotData(self):
+        data = x.parseData()
+        plt.plot(data["Time"],data["Voltage"])
+        plt.show()
 
-#
+
+x = readInData("test_data1.csv")
+x.plotData()
+
