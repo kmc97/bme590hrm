@@ -3,22 +3,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class readInData:
 
-    def __init__ (self, filename = None):
-        self.filename = filename
+def readInData(filename):
+    file_data = pd.read_csv(filename, names = ["Time", "Voltage"])
+    data = HeartRateData(file_data)
+    return data
 
-
-    def parseData(self):
-        data = pd.read_csv(self.filename, names = ["Time", "Voltage"]) 
-        return data
+class HeartRateData:
+    def __init__ (self, data):
+        self.data = data
 
     def plotData(self):
-        data = x.parseData()
-        plt.plot(data["Time"],data["Voltage"])
+        plt.plot(self.data["Time"],self.data["Voltage"])
         plt.show()
 
+#    def find_peaks(self):
+ #       correlation = data.corr()
+ #       data = x.parseData()
+ #       window_size = .5
+#        fs = 1/(data.iloc[6]['Time'] - data.iloc[5]['Time'])
 
-x = readInData("test_data1.csv")
-x.plotData()
 
+def main(filename):
+    data = readInData(filename)
+    data.plotData()
+
+
+main('test_data1.csv')
