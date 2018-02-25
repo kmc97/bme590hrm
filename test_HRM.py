@@ -1,10 +1,10 @@
 import pytest
-
-from HRM import HeartRate
-
-test_file1 = HeartRate("test_data1.csv")
-
+import pandas as pd
+import numpy as np
 
 def test_import():
-    voltage = test_file1.parseData()
-    assert(voltage.iloc[15]['Voltage'] == -0.175)
+    from HRM import importData
+    x = importData('test_data1.csv')
+    voltage = x.readInData()
+    assert(voltage[0,0] == 0)
+    assert(voltage[8,1] == -.12)
