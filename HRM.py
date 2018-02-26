@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.signal import savgol_filter, argrelextrema
+from scipy.signal import savgol_filter, argrelmax
 import math
 
 
@@ -21,69 +21,45 @@ class HeartRateData:
     def __init__ (self, data):
         self.data = data
     
-    def find_correlation(self):
+    def signalProcess(self):
         import matplotlib.pyplot as plt
         voltage = self.data[:,1]
         norm_voltage = voltage - np.mean(voltage)
         smooth_voltage = savgol_filter(norm_voltage, 15,3)
-        plt.plot(smooth_voltage)
-        plt.show()
+#        plt.plot(smooth_voltage)
+#        plt.show()
         return smooth_voltage
     
     def max_find_correlation(self, smooth_voltage):
         import matplotlib.pyplot as plt
-        subset_max_index = argrelextrema(smooth_voltage, np.greater)
-        subset_max = smooth_voltage[subset_max_index [0]]
-        max_value_index = np.argmax(subset_max)
-
-        interval = 50
-        if max_value_index < 50:
-            interval = max_value_index -1
-        if (len(smooth_voltage)-max_value_index < 50):
-            interval = len(smooth_voltage)- max_value_index-1 
+        subset_max_index = argrelmax(smooth_voltage, order = len(smooth_voltage))
+        subset_max_index = subset_max_index[0]        
+        subset_max_index = subset_max_index[0]
+      
+        interval = 30
+        if subset_max_index < interval:
+            interval = subset_max_index -1
+        if (len(smooth_voltage)-subset_max_index < interval):
+            interval = len(smooth_voltage)- subset_max_index-1 
         else:
             interval = interval
+        print(subset_max_index)
 
-        subsetv2 = smooth_voltage[(max_value_index-interval):(max_value_index+interval)]
-        subsetv2 = subsetv2 - np.mean(subsetv2)
-        subsetv2 = savgol_filter(subsetv2,15,3)
-        
-        plt.plot(subsetv2)
-        plt.show()
-       
-        corr_values2 = np.correlate(smooth_voltage, subsetv2)
-        corr_values2 = corr_values2 -np.mean(corr_values2)
-        corr_values_class = detectHeartBeat(corr_values2)
-        return corr_values_class
-
-    def correlation_find_correlation(self, smooth_voltage):
-        import matplotlib.pyplot as plt
-        corr_values = np.correlate(smooth_voltage,smooth_voltage, 'same')
-        max_index = np.argmax(corr_values)
-        subset = smooth_voltage[(max_index-60):(max_index+60)]
-        subset = subset- np.mean(subset)
+        subset = smooth_voltage[(subset_max_index-interval):(subset_max_index+interval)]
+        subset = subset - np.mean(subset)
         subset = savgol_filter(subset,15,3)
-     
-        plt.plot(subset)
-        plt.show()
-        corr_values = np.correlate(smooth_voltage,subset)
-        corr_values = corr_values - np.mean(corr_values)
-        corr_values_class = detectHeartBeat(corr_values)
-
-        return corr_values_class
-
        
-#        plt.subplot(511)
- #       plt.plot(smooth_voltage)
-     #   plt.subplot(512)
-     #   plt.plot(subset)
-     #   plt.subplot(514)
-    #    plt.plot(subsetv2)
-    #    plt.subplot(513)
-     #   plt.plot(corr_values2)
-      #  plt.subplot(515)
-      #  plt.plot(corr_values2)  
-      #  plt.show()
+        corr_values = np.correlate(smooth_voltage, subset)
+        corr_values = corr_values -np.mean(corr_values)
+        
+ #       plt.subplot(2,1,1)
+ #       plt.plot(subset)
+ #       plt.subplot(2,1,2)
+  #      plt.plot(corr_values)
+   #     plt.show()
+
+        corr_values_class = detectHeartBeat(corr_values)
+        return corr_values_class
       
     
 
@@ -91,49 +67,45 @@ class detectHeartBeat:
     def __init__(self,corr_values_class):
         self.corr_values = corr_values_class
 
-    def find_peaks(self):
+    def get_rid_of_neg(self):
         import matplotlib.pyplot as plt
-        rect_values = self.corr_values
-#        rect_values = np.absolute(self.corr_values)  
-        plt.subplot(311)
-        plt.plot(rect_values)
-#        derivative = np.diff(rect_values)
-        derivative = abs(np.diff(rect_values))  
-        plt.subplot(312)
-        plt.plot(derivative)
+        pos_corr_values = self.corr_values
+        pos_corr_values[pos_corr_values < 0] = 0
         
+        df = pd.DataFrame(pos_corr_values)
+        mov_avg = df.rolling(30,center= False).mean()
+        mov_avg = mov_avg.rolling(30, center = False).mean()
         
-        df = pd.DataFrame(derivative)
-        avg_hr = np.mean(derivative)
+        poss_corr_values = mov_avg.as_matrix()
+        return pos_corr_values
 
-        mov_avg = df.rolling(45, center=False).mean()
-        mov_avg = mov_avg.rolling(40, center=False).mean()
-        mov_avg = mov_avg.rolling(50, center= False).mean()
-        mov_avg= mov_avg.rolling(10, center=False).mean()
-        mov_avg[np.isnan(mov_avg)]= avg_hr 
-        mov_avg = mov_avg- np.mean(mov_avg)
 
-           
-        plt.subplot(313)
-        plt.plot(mov_avg)
+    def find_peaks(self, pos_corr_values):
+        import matplotlib.pyplot as plt
+        average = np.mean(pos_corr_values)
+        print(average)
+ 
+        threshold = average*8
+        plt.plot(pos_corr_values)
+        plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
         plt.show()
 
-        mov_avg_numpy = mov_avg.as_matrix()
-        local_max_index =argrelextrema(mov_avg_numpy, np.greater)
-        values = mov_avg_numpy[argrelextrema(mov_avg_numpy, np.greater) [0]]
-        values = [item for item in values if item >= (avg_hr)]
-        print(avg_hr)
-        print(len(values))
+
+        relative_max =argrelmax(pos_corr_values, order = 20)
+        beats = pos_corr_values[relative_max [0]]
+        beats = [item for item in beats if item >= threshold]
+
+        print(len(beats))
 
 
 def main(filename):
     x = importData(filename)
     data = x.readInData()
     data = x.makeObject(data)
-    smooth_voltage =data.find_correlation()
-    corr_values_class1 = data.max_find_correlation(smooth_voltage)   
-    corr_values_class2 = data.correlation_find_correlation(smooth_voltage)
-    corr_values_class1.find_peaks()
-    corr_values_class2.find_peaks()
+    smooth_voltage =data.signalProcess()
+    corr_values_class = data.max_find_correlation(smooth_voltage)   
+    pos_corr_values = corr_values_class.get_rid_of_neg()
+    corr_values_class.find_peaks(pos_corr_values)
 
-#main('test_data8.csv')
+#main('test_data1.csv')
+
