@@ -29,7 +29,20 @@ class HeartRateData:
 #        plt.plot(smooth_voltage)
 #        plt.show()
         return smooth_voltage
-    
+
+    def find_voltage_extremes(self):
+        min_ = np.min(self.data[:,1])
+        max_ = np.max(self.data[:,1])
+        min_max = (min_,max_)
+        print(min_max)
+        return min_max
+
+    def find_duration(self):
+        time = self.data[:,0]
+        time = time[len(time)-1]
+        print(time)
+        return time
+
     def max_find_correlation(self, smooth_voltage):
         import matplotlib.pyplot as plt
         subset_max_index = argrelmax(smooth_voltage, order = len(smooth_voltage))
@@ -43,7 +56,7 @@ class HeartRateData:
             interval = len(smooth_voltage)- subset_max_index-1 
         else:
             interval = interval
-        print(subset_max_index)
+
 
         subset = smooth_voltage[(subset_max_index-interval):(subset_max_index+interval)]
         subset = subset - np.mean(subset)
@@ -83,7 +96,6 @@ class detectHeartBeat:
     def find_peaks(self, pos_corr_values):
         import matplotlib.pyplot as plt
         average = np.mean(pos_corr_values)
-        print(average)
  
         threshold = average*8
         plt.plot(pos_corr_values)
@@ -94,18 +106,35 @@ class detectHeartBeat:
         relative_max =argrelmax(pos_corr_values, order = 20)
         beats = pos_corr_values[relative_max [0]]
         beats = [item for item in beats if item >= threshold]
+        detected_beats = len(beats)
+        print(detected_beats)
 
-        print(len(beats))
+        return beats
 
+    def find_peak_index(self, beats, pos_corr_values):
+        index_int = []
+        for beat_index, k in enumerate(beats):
+            for index_interval, j in enumerate(pos_corr_values):
+           
+                if j == beats[beat_index]:
+                    index_int.append(index_interval)
+        
+        return index_int
+
+
+      
 
 def main(filename):
     x = importData(filename)
     data = x.readInData()
     data = x.makeObject(data)
+ #   data.find_voltage_extremes()
+ #   data.find_duration()
     smooth_voltage =data.signalProcess()
     corr_values_class = data.max_find_correlation(smooth_voltage)   
     pos_corr_values = corr_values_class.get_rid_of_neg()
-    corr_values_class.find_peaks(pos_corr_values)
+    beats = corr_values_class.find_peaks(pos_corr_values)
+    corr_values_class.find_peak_index(beats,pos_corr_values)
 
 #main('test_data1.csv')
 
