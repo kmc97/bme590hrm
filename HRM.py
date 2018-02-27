@@ -25,12 +25,12 @@ class HeartRateData:
         self.index_time = index_time
     
     def signalProcess(self):
-        import matplotlib.pyplot as plt
+#        import matplotlib.pyplot as plt
         voltage = self.data[:,1]
         norm_voltage = voltage - np.mean(voltage)
         smooth_voltage = savgol_filter(norm_voltage, 15,3)
-        plt.plot(smooth_voltage)
-        plt.show()
+ #       plt.plot(smooth_voltage)
+  #      plt.show()
         return smooth_voltage
 
     def find_voltage_extremes(self):
@@ -67,7 +67,7 @@ class HeartRateData:
         return(bpm)
 
     def max_find_correlation(self, smooth_voltage):
-        import matplotlib.pyplot as plt
+   #     import matplotlib.pyplot as plt
         subset_max_index = argrelmax(smooth_voltage, order = len(smooth_voltage))
         subset_max_index = subset_max_index[0]        
         subset_max_index = subset_max_index[0]
@@ -88,11 +88,11 @@ class HeartRateData:
         corr_values = np.correlate(smooth_voltage, subset)
         corr_values = corr_values -np.mean(corr_values)
         
-        plt.subplot(2,1,1)
-        plt.plot(subset)
-        plt.subplot(2,1,2)
-        plt.plot(corr_values)
-        plt.show()
+    #    plt.subplot(2,1,1)
+     #   plt.plot(subset)
+     #   plt.subplot(2,1,2)
+     #   plt.plot(corr_values)
+     #   plt.show()
 
         corr_values_class = detectHeartBeat(corr_values)
         return corr_values_class
@@ -104,7 +104,6 @@ class detectHeartBeat:
         self.corr_values = corr_values_class
 
     def get_rid_of_neg(self):
-        import matplotlib.pyplot as plt
         pos_corr_values = self.corr_values
         pos_corr_values[pos_corr_values < 0] = 0
         
@@ -116,13 +115,12 @@ class detectHeartBeat:
 
 
     def find_peaks(self, pos_corr_values):
-        import matplotlib.pyplot as plt
-        average = np.mean(pos_corr_values)
- 
+      #  import matplotlib.pyplot as plt
+        average = np.mean(pos_corr_values) 
         threshold = average*5.5
-        plt.plot(pos_corr_values)
-        plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
-        plt.show()
+#        plt.plot(pos_corr_values)
+ #       plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
+  #      plt.show()
 
         relative_max =argrelmax(pos_corr_values, order = 20)
         beats = pos_corr_values[relative_max [0]]
@@ -150,7 +148,7 @@ class detectHeartBeat:
         index_time = HeartRateData(index_int)
         return index_time
 
-def main(filename):
+def export_data(filename):
     import json
     json_name = filename.replace('.csv', '.json')
     attributes = get_data(filename)
@@ -185,7 +183,8 @@ def get_data(filename):
     
     return hr, volt_extremes, duration, num_beats, beat_times
 
-filename = 'test_data10.csv'
+def main(filename):
+#    get_data(filename)
+    export_data(filename)
 
-#get_data(filename)
-#main(filename)
+#main('test_data4.csv')

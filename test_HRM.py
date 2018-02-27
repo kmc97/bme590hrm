@@ -38,7 +38,7 @@ def test_average():
 
 
 from HRM import detectHeartBeat
-data_array = np.array([1,2,3,19191,23,41,-2,41])
+data_array = np.array([1,2,3,19191,23,41,-2,41,1,2,3,4,5,6,7,8,8,2,2,4,24,32,1,41,141,13,3,3,3,3])
 z = detectHeartBeat(data_array)
 
 def test_positive_values():
