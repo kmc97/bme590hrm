@@ -10,11 +10,22 @@ class ImportData:
         self.filename = filename
 
     def read_in_data(self):
+        """Function takes in a csv file name and returns a numpy array
+
+        :param self.filename: csv filename
+        :returns file_data_to_numpy: a 2d numpy array with time and voltage
+        """
+
         file_data = pd.read_csv(self.filename, header= None)
         file_data_to_numpy = file_data.as_matrix()
         return file_data_to_numpy
 
     def make_object(self, file_data_to_numpy):
+        """Function turns numpy array into object to be manipulated later
+        
+        :param file_data_to_numpy: numpy array
+        :returns data: instance of data
+        """
         data = HeartRateData(file_data_to_numpy)
         return data
 
@@ -26,6 +37,12 @@ class HeartRateData:
         self.index_time = index_time
     
     def signal_process(self):
+        """ Function removes noise with savgol filter and normalized
+
+        :param self.data: data instance of time and voltage
+        :returns smooth_voltage: single array of voltage
+        """
+
      #   import matplotlib.pyplot as plt
         voltage = self.data[:,1]
         norm_voltage = voltage - np.mean(voltage)
@@ -35,6 +52,12 @@ class HeartRateData:
         return smooth_voltage
 
     def find_voltage_extremes(self):
+        """ Function takes array of voltage and finds maximum and minimum
+
+        :param self.data: unfiltered time and voltage array
+        :returns min_max: tuple of min and max
+        """
+
         min_ = np.min(self.data[:,1])
         max_ = np.max(self.data[:,1])
         min_max = (min_,max_)
@@ -42,12 +65,24 @@ class HeartRateData:
         return min_max
 
     def find_duration(self):
+        """ Function returns last value of time array-- Duration of the ECG
+   
+        :param self.data: unfiltered time and voltage array
+        :return time_duration: last value of time array
+        """
+
         time = self.data[:,0]
         time_duration = time[len(time)-1]
         print('Time Duration of ECG strip (s):', time_duration)
         return time_duration
 
     def find_beat_times(self,data, index_time):
+        """ Function takes index of heart beat events and returns the corresponding time values
+       
+        :param data: unfiltered time and voltage array
+        :param index_time: an instance index of heart beat events
+        :returns beat_times: array of times corresponding to heart beat events
+        """
         beat_times = []
         time = data[:,0]
 
@@ -60,6 +95,11 @@ class HeartRateData:
 
 
     def find_avg_hr(self, beat_times):
+       
+        """Function finds median time interval between heart beat events to calculate BPM
+        :param beat_times: array of times of heart beat of events
+        :returns bpm: average heart beat per minute
+        """
         beat_diffs = np.diff(beat_times)
         median_interval = np.median(beat_diffs)
         bpm = round(60/median_interval)
@@ -68,6 +108,14 @@ class HeartRateData:
         return(bpm)
 
     def max_find_correlation(self, smooth_voltage):
+        """Function finds correlation values by correlating subset max QRS wave to rest of signal
+
+        :param smooth_voltage: filtered voltage array
+        :param subset_max_index: index of maximum voltage value
+        :param subset: a subset of a single QRS wave based on maximum voltage value
+        :returns corr_values_class: an instance of correlation values based on when heart beat occured
+        """
+
 #        import matplotlib.pyplot as plt
         subset_max_index = argrelmax(smooth_voltage, order = len(smooth_voltage))
         subset_max_index = subset_max_index[0]        
@@ -104,6 +152,12 @@ class DetectHeartBeat:
         self.corr_values = corr_values_class
 
     def get_rid_of_neg(self):
+        """Function removes negative correlation values to help detect positive correlation values
+
+        :param self.corr_values: instance of correlation values
+        :returns pos_corr_values: only positive correlation values
+        """
+
         pos_corr_values = self.corr_values
         pos_corr_values[pos_corr_values < 0] = 0
         
@@ -115,6 +169,13 @@ class DetectHeartBeat:
 
 
     def find_peaks(self, pos_corr_values):
+        """Function finds relative max of correlations then filters out values that do not pass threshold.
+
+        :param pos_corr_values: array of positive correlation values
+        :param threshold: threshold to cuttoff what constitutes event, average*5.5
+        :returns beats: array of correlation values at specific heart beat events
+        """
+
       #  import matplotlib.pyplot as plt
         average = np.mean(pos_corr_values) 
         threshold = average*5.5
@@ -129,12 +190,25 @@ class DetectHeartBeat:
         return beats
 
     def number_beats(self, beats):
+        """Function takes array of beat correlation values and returns the number of beats
+  
+        :param beats: array of correlation values at heart beat event
+        :returns num_detected_beats: integer value number of beats
+        """
+
         num_detected_beats = len(beats)
         print('Number of Detected Beats:', num_detected_beats)
 
         return num_detected_beats
 
     def find_peak_index(self, beats, pos_corr_values):
+        """Function that takes relative max correlation values and finds indicies (heart beats)
+
+        :param beats: array of correlation values at heart beat event
+        :param pos_corr_values: array of correlation values
+        :returns index_int: index of maximum correlation values (index of heart beat)
+        """
+        
         index_int = []
         for beat_index, k in enumerate(beats):
             for index_interval, j in enumerate(pos_corr_values):
@@ -149,6 +223,13 @@ class DetectHeartBeat:
         return index_time
 
 def export_data(filename):
+    """ Function takes all data and writes it into json file
+ 
+    :param filename: csv filename
+    :param attributes: avg hr, voltage extremes, ECG time duration, Number of beats, Beat times
+    :returns json_name: file name of json file
+    """
+
     import json
     json_name = filename.replace('.csv', '.json')
     attributes = get_data(filename)
@@ -164,6 +245,13 @@ def export_data(filename):
     return json_name 
 
 def get_data(filename):
+
+    """ Function that messily calls all classes and functions to return data
+    
+    :param filename: csv filename
+    :returns attributes: list of hr, volt_extremes, duration, num_beats, beat_times
+    """
+
     #Import Data & create voltage/time object
     x = ImportData(filename)
     data = x.read_in_data()
