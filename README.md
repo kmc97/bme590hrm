@@ -9,8 +9,11 @@ Outputs: a .json file that contains a list of the BPM, voltage extremes, duratio
 
 Limitations: the correlation values are determined by taking the MAXIMUM QRS peak, if the signal were to suddently drift off this could lead to a poor correlation subset.
 
+Fun Travis Badge:
+
 [![Build Status](https://travis-ci.org/kmc97/bme590hrm.svg?branch=master)](https://travis-ci.org/kmc97/bme590hrm)
 
+License:
 MIT License
 Copyright (c) [2018] [Katie Carroll]
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the software is furnished to do so, subject to the following conditions:
