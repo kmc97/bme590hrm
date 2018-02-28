@@ -4,9 +4,9 @@ import numpy as np
 
 
 def test_import():
-    from HRM import ManipulateData
-    x = ManipulateData('test_data1.csv')
-    voltage = x.readInData()
+    from HRM import ImportData
+    x = ImportData('test_data1.csv')
+    voltage = x.read_in_data()
     assert(voltage[0,0] == 0)
     assert(voltage[8,1] == -.12)
 
@@ -37,9 +37,9 @@ def test_average():
     assert  average == 20
 
 
-from HRM import detectHeartBeat
+from HRM import DetectHeartBeat
 data_array = np.array([1,2,3,19191,23,41,-2,41,1,2,3,4,5,6,7,8,8,2,2,4,24,32,1,41,141,13,3,3,3,3])
-z = detectHeartBeat(data_array)
+z = DetectHeartBeat(data_array)
 
 def test_positive_values():
     values = z.get_rid_of_neg()
@@ -62,3 +62,13 @@ def test_find_index():
     values = z.find_peak_index([19191], data_array)
     assert values == [3]
 
+from HRM import export_data
+from HRM import get_data
+def test_output_data():
+    attributes = get_data('test_data1.csv')
+    assert len(attributes) == 5
+
+def test_json_writting():
+    json_file_name = export_data('test_data1.csv')
+    assert (json_file_name == 'test_data1.json')
+     

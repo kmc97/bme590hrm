@@ -4,19 +4,20 @@ from scipy.signal import savgol_filter, argrelmax
 import math
 
 
-class ManipulateData:
+class ImportData:
 
     def __init__ (self, filename = None):
         self.filename = filename
 
-    def readInData(self):
+    def read_in_data(self):
         file_data = pd.read_csv(self.filename, header= None)
         file_data_to_numpy = file_data.as_matrix()
         return file_data_to_numpy
 
-    def makeObject(self, file_data_to_numpy):
+    def make_object(self, file_data_to_numpy):
         data = HeartRateData(file_data_to_numpy)
         return data
+
  
 class HeartRateData:
     
@@ -24,13 +25,13 @@ class HeartRateData:
         self.data = data
         self.index_time = index_time
     
-    def signalProcess(self):
-#        import matplotlib.pyplot as plt
+    def signal_process(self):
+     #   import matplotlib.pyplot as plt
         voltage = self.data[:,1]
         norm_voltage = voltage - np.mean(voltage)
         smooth_voltage = savgol_filter(norm_voltage, 15,3)
- #       plt.plot(smooth_voltage)
-  #      plt.show()
+    #    plt.plot(smooth_voltage)
+   #     plt.show()
         return smooth_voltage
 
     def find_voltage_extremes(self):
@@ -67,7 +68,7 @@ class HeartRateData:
         return(bpm)
 
     def max_find_correlation(self, smooth_voltage):
-   #     import matplotlib.pyplot as plt
+#        import matplotlib.pyplot as plt
         subset_max_index = argrelmax(smooth_voltage, order = len(smooth_voltage))
         subset_max_index = subset_max_index[0]        
         subset_max_index = subset_max_index[0]
@@ -80,7 +81,6 @@ class HeartRateData:
         else:
             interval = interval
 
-
         subset = smooth_voltage[(subset_max_index-interval):(subset_max_index+interval)]
         subset = subset - np.mean(subset)
         subset = savgol_filter(subset,15,3)
@@ -88,18 +88,18 @@ class HeartRateData:
         corr_values = np.correlate(smooth_voltage, subset)
         corr_values = corr_values -np.mean(corr_values)
         
-    #    plt.subplot(2,1,1)
-     #   plt.plot(subset)
-     #   plt.subplot(2,1,2)
-     #   plt.plot(corr_values)
+ #       plt.subplot(2,1,1)
+  #      plt.plot(subset)
+   #     plt.subplot(2,1,2)
+    #    plt.plot(corr_values)
      #   plt.show()
 
-        corr_values_class = detectHeartBeat(corr_values)
+        corr_values_class = DetectHeartBeat(corr_values)
         return corr_values_class
       
     
 
-class detectHeartBeat:
+class DetectHeartBeat:
     def __init__(self,corr_values_class):
         self.corr_values = corr_values_class
 
@@ -118,9 +118,9 @@ class detectHeartBeat:
       #  import matplotlib.pyplot as plt
         average = np.mean(pos_corr_values) 
         threshold = average*5.5
-#        plt.plot(pos_corr_values)
- #       plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
-  #      plt.show()
+       # plt.plot(pos_corr_values)
+       # plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
+       # plt.show()
 
         relative_max =argrelmax(pos_corr_values, order = 20)
         beats = pos_corr_values[relative_max [0]]
@@ -160,31 +160,43 @@ def export_data(filename):
     jsonfile = open(json_name, 'w')
     json.dump(data, jsonfile)
     jsonfile.write('\n')
-
+ 
+    return json_name 
 
 def get_data(filename):
-    x = ManipulateData(filename)
-    data = x.readInData()
-    data_obj = x.makeObject(data)
+    #Import Data & create voltage/time object
+    x = ImportData(filename)
+    data = x.read_in_data()
+    data_obj = x.make_object(data)
+
+    #Determine voltage extremes and length of timeframe
     volt_extremes = data_obj.find_voltage_extremes()
     duration = data_obj.find_duration()
-    smooth_voltage =data_obj.signalProcess()
 
+    #Determine Correlation and create object of peak events
+    smooth_voltage =data_obj.signal_process()
     corr_values_class = data_obj.max_find_correlation(smooth_voltage)   
     pos_corr_values = corr_values_class.get_rid_of_neg()
     beats = corr_values_class.find_peaks(pos_corr_values)
+   
+    #Determine Number of beats
     num_beats = corr_values_class.number_beats(beats)
-  
+    
+    #Determine Time stamp of beats and create object of time values
     index_int = corr_values_class.find_peak_index(beats,pos_corr_values)
     index_time = corr_values_class.make_object_time(index_int)   
    
+    #Determine time of beat events and average heart rate
     beat_times= index_time.find_beat_times(data,index_int)
     hr = index_time.find_avg_hr(beat_times)
     
-    return hr, volt_extremes, duration, num_beats, beat_times
+    attributes = [hr, volt_extremes, duration, num_beats, beat_times]   
+
+    return attributes
+    
 
 def main(filename):
 #    get_data(filename)
     export_data(filename)
 
-#main('test_data4.csv')
+main('test_data4.csv')
