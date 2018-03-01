@@ -1,0 +1,416 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>HRM module &#8212; BME590 HRM  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="test_HRM module" href="test_HRM.html" />
+    <link rel="prev" title="Welcome to BME590 HRM’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-HRM">
+<span id="hrm-module"></span><h1>HRM module<a class="headerlink" href="#module-HRM" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="HRM.DetectHeartBeat">
+<em class="property">class </em><code class="descclassname">HRM.</code><code class="descname">DetectHeartBeat</code><span class="sig-paren">(</span><em>corr_values_class</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.DetectHeartBeat" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="HRM.DetectHeartBeat.find_peak_index">
+<code class="descname">find_peak_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.DetectHeartBeat.find_peak_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that takes relative max correlation values and finds indicies (heart beats)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>self.beats</strong> – array of correlation values at heart beat event</li>
+<li><strong>self.pos_corr_values</strong> – array of correlation values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.index_int:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">index of maximum correlation values (index of heart beat)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.DetectHeartBeat.find_peaks">
+<code class="descname">find_peaks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.DetectHeartBeat.find_peaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function finds relative max of correlations then filters out values that do not pass threshold.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.pos_corr_values</strong> – array of positive correlation values</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.beats:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">array of correlation values at specific heart beat events</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.DetectHeartBeat.get_rid_of_neg">
+<code class="descname">get_rid_of_neg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.DetectHeartBeat.get_rid_of_neg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function removes negative correlation values to help detect positive correlation values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.corr_values</strong> – instance of correlation values</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.pos_corr_values:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">only positive correlation values</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.DetectHeartBeat.make_object_time">
+<code class="descname">make_object_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.DetectHeartBeat.make_object_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that makes heart beat time instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.index_int</strong> – index of maximum correlation values (indicies of heart beats)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.index_time:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">object containing indicies of heart beats</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="HRM.HeartRateData">
+<em class="property">class </em><code class="descclassname">HRM.</code><code class="descname">HeartRateData</code><span class="sig-paren">(</span><em>data</em>, <em>index_time=None</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="HRM.HeartRateData.find_avg_hr">
+<code class="descname">find_avg_hr</code><span class="sig-paren">(</span><em>data</em>, <em>index_int</em>, <em>interval</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.find_avg_hr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function finds average hr over user specified time interval</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> – array that contains time and voltages</li>
+<li><strong>index_int</strong> – array containing indicies of heart beat events</li>
+<li><strong>interval</strong> – user defined value in minutes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.bpm:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">list of average heart beat per minute</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.find_beat_times">
+<code class="descname">find_beat_times</code><span class="sig-paren">(</span><em>data</em>, <em>index_time</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.find_beat_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function takes index of heart beat events and returns the corresponding time values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> – unfiltered time and voltage array</li>
+<li><strong>index_time</strong> – an instance index of heart beat events</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.beat_times:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">array of times corresponding to heart beat events</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.find_duration">
+<code class="descname">find_duration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.find_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function returns last value of time array– Duration of the ECG</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.data</strong> – unfiltered time and voltage array</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return self.time_duration:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">last value of time array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.find_number_beats">
+<code class="descname">find_number_beats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.find_number_beats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function returns number of heart beat events</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.beat_times</strong> – array of beat times</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.num_beats:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">number of total beats</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.find_voltage_extremes">
+<code class="descname">find_voltage_extremes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.find_voltage_extremes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function takes array of voltage and finds maximum and minimum</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.data</strong> – unfiltered time and voltage array</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns min_max:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">tuple of min and max</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.max_find_correlation">
+<code class="descname">max_find_correlation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.max_find_correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function finds correlation values by correlating subset (max QRS wave) to rest of signal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.smooth_voltage</strong> – filtered voltage array</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.corr_values_class:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">an instance of correlation values based on when heart beat occured</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.return_attributes">
+<code class="descname">return_attributes</code><span class="sig-paren">(</span><em>duration</em>, <em>min_max</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.return_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function takes final attributes and exports a list to be used for data exportation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>duration</strong> – length of ECG array</li>
+<li><strong>min_max</strong> – voltage extremes of ECG array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns attributes:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">list of final attributes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.HeartRateData.signal_process">
+<code class="descname">signal_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.HeartRateData.signal_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function removes noise with savgol filter and normalized</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.data</strong> – data instance of time and voltage</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns smooth_voltage:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">single array of voltage</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="HRM.ReadWriteData">
+<em class="property">class </em><code class="descclassname">HRM.</code><code class="descname">ReadWriteData</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.ReadWriteData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="HRM.ReadWriteData.export_data">
+<code class="descname">export_data</code><span class="sig-paren">(</span><em>filename</em>, <em>attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.ReadWriteData.export_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function takes list of final attributes and exports json file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> – csv filename</li>
+<li><strong>attributes</strong> – avg hr, Volt extremes, time duration, num of beats and beat time array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns json_name:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">file name of json file</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.ReadWriteData.make_time_voltage_object">
+<code class="descname">make_time_voltage_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.ReadWriteData.make_time_voltage_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function turns numpy array into object to be manipulated later</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self.file_datay</strong> – numpy array</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.data:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">instance of data containing times and voltages</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="HRM.ReadWriteData.read_in_data">
+<code class="descname">read_in_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HRM.ReadWriteData.read_in_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function takes in a csv file name and returns a numpy array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>self.filename</strong> – csv filename</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns self.file_data:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first">a 2d numpy array with time and voltage</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>IOError</strong> – makes sure import file is a .csv file</li>
+<li><strong>TypeError</strong> – make sure values inside ECG trace are floats</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="HRM.interval_check">
+<code class="descclassname">HRM.</code><code class="descname">interval_check</code><span class="sig-paren">(</span><em>interval</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.interval_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function checks to make sure interval is greater than zero</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interval</strong> – user input time interval</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> – value error raised if interval is 0 or negative</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="HRM.main">
+<code class="descclassname">HRM.</code><code class="descname">main</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#HRM.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to BME590 HRM’s documentation!</a></li>
+      <li>Next: <a href="test_HRM.html" title="next chapter">test_HRM module</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/HRM.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Katie Carroll.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/HRM.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
