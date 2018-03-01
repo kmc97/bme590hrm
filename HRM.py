@@ -117,7 +117,7 @@ class HeartRateData:
         min_ = np.min(self.data[:,1])
         max_ = np.max(self.data[:,1])
         self.min_max = (min_,max_)
-        print('Voltage Extremes (V):', self.min_max)
+#        print('Voltage Extremes (V):', self.min_max)
 
         return self.min_max
 
@@ -130,7 +130,7 @@ class HeartRateData:
 
         time = self.data[:,0]
         self.time_duration = time[len(time)-1]
-        print('Time Duration of ECG strip (s):', self.time_duration)
+ #       print('Time Duration of ECG strip (s):', self.time_duration)
 
         return self.time_duration
 
@@ -147,7 +147,7 @@ class HeartRateData:
         for i in index_time:
             self.beat_times.append(time[i])
      
-        print('Times of Beat Event (s):', self.beat_times)
+  #      print('Times of Beat Event (s):', self.beat_times)
      
         return(self.beat_times)
 
@@ -159,23 +159,38 @@ class HeartRateData:
         """
 
         self.num_beats = len(self.beat_times)
-        print('Number of detected Beats:', self.num_beats)
+   #     print('Number of detected Beats:', self.num_beats)
 
         return self.num_beats
 
-    def find_avg_hr(self):
+    def find_avg_hr(self,data, index_int, interval):
        
-        """Function finds median time interval between heart beat events to calculate BPM
-
-        :param self.beat_times: array of times of heart beat of events
-        :returns self.bpm: average heart beat per minute
-        """
-      
-        beat_diffs = np.diff(self.beat_times)
-        median_interval = np.median(beat_diffs)
-        self.bpm = round(60/median_interval)
-        print('Average Heart Rate (BPM):', self.bpm)
+        """Function finds average hr over user specified time interval
         
+        :param data: array that contains time and voltages
+        :param index_int: array containing indicies of heart beat events
+        :param interval: user defined value in minutes
+        :returns self.bpm: list of average heart beat per minute
+        """
+        time = data[:,0]
+        avg_time_step = np.mean(np.diff(time))
+         
+        avg_int_index = interval*60/avg_time_step
+        avg_int_index = int(avg_int_index/np.mean(np.diff(index_int)))
+          
+        beat_diffs =[index_int[x:x+avg_int_index] for x in range(0, len(index_int), avg_int_index)]
+        
+        self.bpm = []        
+        avg_hrs= []
+        for arrays in beat_diffs:
+            arrays = np.diff(arrays)
+            avg_hr = np.mean(arrays)*avg_time_step
+            avg_hrs.append(avg_hr)
+      
+        self.bpm = [x/(1/60) for x in avg_hrs]
+        
+        print('Average Heart Rate (BPM):', self.bpm)
+       
         return(self.bpm)
 
     def max_find_correlation(self):
@@ -296,7 +311,18 @@ class DetectHeartBeat:
         self.index_time = HeartRateData(self.index_int)
         
         return self.index_time
+def interval_check(interval):
+    """ Function checks to make sure interval is greater than zero
 
+    :param interval: user input time interval
+    :raises ValueError: value error raised if interval is 0 or negative
+    """
+
+    if interval<= 0:
+        logging.info('WARNING: Exception raised, incorrect user input')
+        raise ValueError 
+    else:
+        pass
 
 def main(filename):
     logging.info('INFO: ECG analysis has started')
@@ -322,7 +348,15 @@ def main(filename):
    
     #Determine time of beat events, number of beats and average heart rate
     index_time.find_beat_times(data, index_int)
-    index_time.find_avg_hr()
+    interval = float(input("Enter interval value for avg hr in minutes: "))
+    logging.info('INFO: user input in minutes recieved')
+ 
+    try:
+        interval_check(interval)
+    except ValueError:
+        print('Rerun program and choose different time interval in minutes')
+
+    index_time.find_avg_hr(data, index_int,interval)
     index_time.find_number_beats() 
 
     # Organize and export final attributes
