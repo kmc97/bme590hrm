@@ -22,6 +22,24 @@ def test_values_in_matrix():
         z = ReadWriteData('wrong.csv')
         z.read_in_data()
 
+def test_json_file_creation():
+    import os
+    import json
+
+    from HRM import ReadWriteData
+    x = ReadWriteData('test_data1.csv')
+    x.export_data('test_data1.csv', [1,2,3,4,5])
+    if os.path.isfile('test_data1.json'):
+        x= 1
+    else:
+        x = 0
+    
+    assert x == 1
+
+    data = open('test_data1.json').read()
+    values = json.loads(data)
+    assert values[0] == {'avg_hr:': 1}
+ 
 
 from HRM import HeartRateData
 data_matrix = np.array([[1,2],[3,9],[-1212,-1], [50,4]])

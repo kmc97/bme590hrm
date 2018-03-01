@@ -30,12 +30,11 @@ class ReadWriteData:
 
         file_data = pd.read_csv(self.filename, header= None)
         self.file_data = file_data.as_matrix()
-        
-        print(self.file_data)
+       
         times = self.file_data[:,0]
         volts = self.file_data[:,1]
         data_check = [times,volts]
-#        
+        
         for columns in data_check:
             for values in times:
                 if isinstance(values, float):
@@ -171,6 +170,7 @@ class HeartRateData:
         :param self.beat_times: array of times of heart beat of events
         :returns self.bpm: average heart beat per minute
         """
+      
         beat_diffs = np.diff(self.beat_times)
         median_interval = np.median(beat_diffs)
         self.bpm = round(60/median_interval)
@@ -257,8 +257,7 @@ class DetectHeartBeat:
         average = np.mean(self.pos_corr_values) 
         threshold = average*5.5
     
-               
-       # import matplotlib.pyplot as plt
+        # impot matplotlib.pyplot as plt
        # plt.plot(self.pos_corr_values)
        # plt.plot((0, len(self.pos_corr_values)),(threshold,threshold), 'k-')
         #plt.show() 
@@ -327,8 +326,10 @@ def main(filename):
     index_time.find_number_beats() 
 
     # Organize and export final attributes
+    import os
     attributes = index_time.return_attributes(duration, min_max) 
     x.export_data(filename,attributes)
-   
+
     logging.info('INFO: ECG analysis has ended')
+
 #main('test_data1.csv')
