@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 from scipy.signal import savgol_filter, argrelmax
-import math
+import logging
+
+
+logging.basicConfig(filename='logging.txt', format='%(asctime)s %(message)s', datefmt ='%m/%d/%Y &I:%M:%S %p', level=logging.DEBUG)
 
 
 class ReadWriteData:
@@ -16,11 +19,33 @@ class ReadWriteData:
 
         :param self.filename: csv filename
         :returns self.file_data: a 2d numpy array with time and voltage
+        :raises IOError: makes sure import file is a .csv file
+        :raises TypeError: make sure values inside ECG trace are floats
         """
+
+        if self.filename.endswith('.csv'):
+            pass
+        else:
+            raise IOError("the file you are trying to input is not a .csv file")
 
         file_data = pd.read_csv(self.filename, header= None)
         self.file_data = file_data.as_matrix()
+        
+        print(self.file_data)
+        times = self.file_data[:,0]
+        volts = self.file_data[:,1]
+        data_check = [times,volts]
+#        
+        for columns in data_check:
+            for values in times:
+                if isinstance(values, float):
+                    pass 
+                else:
+                    raise TypeError('.csv file must contain data type float')
+
         return self.file_data
+
+
 
     def make_time_voltage_object(self):
         """Function turns numpy array into object to be manipulated later
@@ -51,6 +76,8 @@ class ReadWriteData:
         json.dump(json_output, jsonfile)
         jsonfile.write('\n')
 
+        logging.info('INFO: Created .json file')
+
 class HeartRateData:
     
     def __init__ (self, data, index_time= None):
@@ -70,10 +97,14 @@ class HeartRateData:
         :param self.data: data instance of time and voltage
         :returns smooth_voltage: single array of voltage
         """
-
+        
         voltage = self.data[:,1]
         norm_voltage = voltage - np.mean(voltage)
         self.smooth_voltage = savgol_filter(norm_voltage, 15,3)
+
+#        import matplotlib.pyplot as plt
+  #      plt.plot(self.smooth_voltage)
+   #     plt.show()
 
         return self.smooth_voltage
 
@@ -186,7 +217,8 @@ class HeartRateData:
         """
 
         attributes = [self.bpm, self.num_beats, self.beat_times, duration, min_max]
-      
+        logging.info('INFO: final attributes collected')
+
         return attributes
 
 
@@ -224,11 +256,12 @@ class DetectHeartBeat:
 
         average = np.mean(self.pos_corr_values) 
         threshold = average*5.5
-
+    
+               
        # import matplotlib.pyplot as plt
-       # plt.plot(pos_corr_values)
-       # plt.plot((0, len(pos_corr_values)),(threshold,threshold), 'k-')
-       # plt.show()
+       # plt.plot(self.pos_corr_values)
+       # plt.plot((0, len(self.pos_corr_values)),(threshold,threshold), 'k-')
+        #plt.show() 
 
         relative_max =argrelmax(self.pos_corr_values, order = 20)
         self.beats = self.pos_corr_values[relative_max [0]]
@@ -267,6 +300,7 @@ class DetectHeartBeat:
 
 
 def main(filename):
+    logging.info('INFO: ECG analysis has started')
 
     #Import Data & create voltage/time object
     x = ReadWriteData(filename)
@@ -293,7 +327,8 @@ def main(filename):
     index_time.find_number_beats() 
 
     # Organize and export final attributes
-    attributes = index_time.return_attributes_object(duration, min_max) 
+    attributes = index_time.return_attributes(duration, min_max) 
     x.export_data(filename,attributes)
-
-#main('test_data4.csv')
+   
+    logging.info('INFO: ECG analysis has ended')
+#main('test_data1.csv')

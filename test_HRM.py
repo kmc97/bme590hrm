@@ -10,6 +10,19 @@ def test_import():
     assert(voltage[0,0] == 0)
     assert(voltage[8,1] == -.12)
 
+def test_file_name():
+    from HRM import ReadWriteData
+    with pytest.raises(IOError):
+        y = ReadWriteData('csv_less')
+        y.read_in_data()
+
+def test_values_in_matrix():
+    from HRM import ReadWriteData
+    with pytest.raises(TypeError):
+        z = ReadWriteData('wrong.csv')
+        z.read_in_data()
+
+
 from HRM import HeartRateData
 data_matrix = np.array([[1,2],[3,9],[-1212,-1], [50,4]])
 x = HeartRateData(data_matrix)
